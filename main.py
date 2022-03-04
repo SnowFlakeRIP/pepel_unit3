@@ -71,6 +71,21 @@ class Server(BaseHTTPRequestHandler):
         if self.path == '/add_news':
             try:
                 data = Server.get_data(self)
+                if data.get('text') == None:
+                    Server.end_response(self, {
+                        "error": "Parameter 'text' is required"
+                    })
+                    return None
+                if data.get('user_id') == None:
+                    Server.end_response(self, {
+                        "error": "Parameter 'user_id' is required"
+                    })
+                    return None
+                if data.get('title') == None:
+                    Server.end_response(self, {
+                        "error": "Parameter 'title' is required"
+                    })
+                    return None
                 user_id = data["user_id"]
                 title = data["title"]
                 text = data["text"]
@@ -83,6 +98,11 @@ class Server(BaseHTTPRequestHandler):
         elif self.path == '/add_user':
             try:
                 data = Server.get_data(self)
+                if data.get('email') == None:
+                    Server.end_response(self, {
+                        "error": "Parameter 'email' is required"
+                    })
+                    return None
                 email = data["email"]
                 Users.create(email=email)
                 Server.end_response(self, {
@@ -93,6 +113,11 @@ class Server(BaseHTTPRequestHandler):
         elif self.path == '/add_role':
             try:
                 data = Server.get_data(self)
+                if data.get('role_name') == None:
+                    Server.end_response(self, {
+                        "error": "Parameter 'role_name' is required"
+                    })
+                    return None
                 role_name = data["role_name"]
                 Roles.create(role_name=role_name)
                 Server.end_response(self, {
@@ -103,6 +128,15 @@ class Server(BaseHTTPRequestHandler):
         elif self.path == '/add_user_role':
             try:
                 data = Server.get_data(self)
+                if data.get('role_id') == None:
+                    Server.end_response(self, {
+                        "error": "Parameter 'role_id' is required"
+                    })
+                    return None
+                if data.get('user_id') == None:
+                    Server.end_response(self, {
+                        "error": "Parameter 'user_id' is required"
+                    })
                 role_id = data["role_id"]
                 user_id = data["user_id"]
                 UserRoles.create(role_id=role_id, user_id=user_id)
@@ -136,6 +170,11 @@ class Server(BaseHTTPRequestHandler):
                         {"news_id": item.news_id, "user_id": item.user_id.user_id, "title": item.title,
                          "text": item.text}
                     )
+                if len(response) == 0:
+                    Server.end_response(self, {
+                        "message": f"News with id = {querys['id'][0]} is not exist"
+                    })
+                    return None
                 Server.end_response(self, response)
             except:
                 Server.server_error(self)
@@ -160,6 +199,11 @@ class Server(BaseHTTPRequestHandler):
                     response.append(
                         {"user_id": item.user_id, "email": item.email}
                     )
+                if len(response) == 0:
+                    Server.end_response(self, {
+                        "message": f"User with id = {querys['id'][0]} is not exist"
+                    })
+                    return None
                 Server.end_response(self, response)
             except:
                 Server.server_error(self)
@@ -192,6 +236,11 @@ class Server(BaseHTTPRequestHandler):
                         {"user_role_id": item.user_role_id, "user": user_email,
                          "role_id": user_role}
                     )
+                if len(response) == 0:
+                    Server.end_response(self, {
+                        "message": f"User with id = {querys['id'][0]} is not exist"
+                    })
+                    return None
                 Server.end_response(self, response)
             except:
                 Server.server_error(self)
